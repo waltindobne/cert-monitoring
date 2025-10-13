@@ -1,0 +1,29 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+html {
+    scroll-behavior: smooth;
+}
+:root {
+    --background: #0f111a;
+    --foreground: #1a1c26;
+    --primary: #ffdf20;
+    --secondary: #3a3f58;
+    --third: #ffdf2010;
+    --text-primary: #ffffff;
+    --text-secondary: #aaaaaa;
+    --text-third: #777777;
+}
+
+body {    
+    width: auto;
+    background-color: var(--background);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.active {
+    background: var(--primary) !important;
+    color: var(--background) !important;
+}
