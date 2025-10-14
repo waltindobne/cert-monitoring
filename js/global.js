@@ -8,10 +8,6 @@ async function loadHeader() {
             return;
         }
 
-        // Obter o valor do atributo 'value' (página ativa)
-        const activePage = header.getAttribute('value');
-        console.log(`Active page: ${activePage}`);
-
         const response = await fetch('/html/components/header.html');
         
         if (!response.ok) {
@@ -20,11 +16,8 @@ async function loadHeader() {
         
         const data = await response.text();
         header.innerHTML = data;
-        
-        // Aplicar a classe/styling para a página ativa
-        if (activePage) {
-            applyActivePage(activePage);
-        }
+    
+        detectActivePage();
         
         console.log("Header loaded successfully");
     } catch (error) {
@@ -32,17 +25,40 @@ async function loadHeader() {
     }
 }
 
+function detectActivePage() {
+    const currentPath = window.location.pathname;
+    console.log(`Current path: ${currentPath}`);
+    
+    let activePage = '';
+    
+    if (currentPath === '/' || currentPath === '/index.html' || currentPath.includes('index')) {
+        activePage = 'inicio';
+    } else if (currentPath.includes('cert-by-cluster') || currentPath.includes('cluster')) {
+        activePage = 'clusters';
+    } else if (currentPath.includes('certificados') || currentPath.includes('certificates')) {
+        activePage = 'certificados';
+    } else if (currentPath.includes('configuracoes') || currentPath.includes('settings')) {
+        activePage = 'configuracoes';
+    }
+    
+    console.log(`Detected active page: ${activePage}`);
+    applyActivePage(activePage);
+}
+
 function applyActivePage(activePage) {
-    // Encontrar o link correspondente à página ativa
+    document.querySelectorAll('nav a').forEach(link => {
+        link.classList.remove('active');
+        link.removeAttribute('aria-current');
+    });
+    
     const activeLink = document.querySelector(`[data-page="${activePage}"]`);
     
     if (activeLink) {
-        // Adicionar classe 'active' ao link
         activeLink.classList.add('active');
-        
-        // Ou modificar estilos diretamente
-        activeLink.style.fontWeight = 'bold';
-        activeLink.style.color = 'var(--primary)'; // Use sua variável CSS
+        activeLink.setAttribute('aria-current', 'page');
+        console.log(`✅ Active page set to: ${activePage}`);
+    } else {
+        console.warn(`⚠️ No link found for page: ${activePage}`);
     }
 }
 
@@ -51,7 +67,6 @@ async function main() {
     await loadHeader();
 }
 
-// Inicializar quando o DOM estiver pronto
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', main);
 } else {
