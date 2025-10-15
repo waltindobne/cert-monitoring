@@ -90,6 +90,7 @@ main .list-cert .search {
     margin-bottom: 10px;
 }
 main .list-cert .search input {
+    width: 300px;
     padding: 10px;
     background: var(--foreground);
     border-radius: 8px;
