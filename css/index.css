@@ -45,6 +45,7 @@ header nav a {
     padding: 10px 20px;
     background: var(--background);
     border: none;
+    outline: 1px solid var(--primary);
     border-radius: 5px;
     color: var(--primary);
     font-size: 16px;
@@ -68,6 +69,7 @@ main {
     display: flex;
     flex-direction: column;
     gap: 40px;
+    overflow: auto;
 }
 main .resume {
     width: 100%;
@@ -94,7 +96,7 @@ main .list-cert .search input {
     padding: 10px;
     background: var(--foreground);
     border-radius: 8px;
-    border: none;
+    border: 1px solid var(--secondary);
     outline: none;
     color: var(--text-primary);
     font-size: 16px;
@@ -103,6 +105,7 @@ main .list-cert .search nav button {
     padding: 10px 20px;
     background-color: var(--foreground);
     border: none;
+    outline: 1px solid var(--secondary);
     border-radius: 8px;
     font-size: 16px;
     color: var(--primary);
@@ -182,6 +185,7 @@ main .paginate button {
     padding: 10px 20px;
     background-color: var(--foreground);
     border: none;
+    outline: 1px solid var(--secondary);
     border-radius: 8px;
     font-size: 16px;
     color: var(--primary);
@@ -203,6 +207,8 @@ main .paginate ul li {
 
     color: var(--text-secondary);
     list-style: none;
+
+    outline: 1px solid var(--secondary);
 
     cursor: pointer;
     transition: .2s;

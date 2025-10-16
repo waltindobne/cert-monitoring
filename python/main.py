@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Response
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 import requests
 
 app = FastAPI()
@@ -13,16 +14,17 @@ app.add_middleware(
 )
 
 METRIC_URLS = [
-    "http://10.5.2.9:9402/metrics", # Inovacao 
-    "http://10.5.2.13:9402/metrics" # LugarhV2
+    "http://10.5.2.9:9402/metrics",  # Inovacao 
+    "http://10.5.2.13:9402/metrics",  # LugarhV2
+    "http://10.5.2.14:9402/metrics" # RedRrasil
+    "http://10.5.2.16:9402/metrics", # MailSender
 ]
 
-@app.get("/")
-def get_metrics():
+def get_metric_response(urls):
     combined_metrics = ""
     success_count = 0
 
-    for url in METRIC_URLS:
+    for url in urls:
         try:
             r = requests.get(url, timeout=5)
             r.raise_for_status()
@@ -31,30 +33,29 @@ def get_metrics():
         except Exception as e:
             combined_metrics += f"# Erro ao buscar métricas em {url}: {e}\n"
 
-    return {
-        "status": "success",                # ← status da requisição
-        "sources_count": success_count,     # ← número de URLs consultadas com sucesso
-        "total_targets": len(METRIC_URLS),  # ← total de URLs que tentou consultar
-        "metrics": combined_metrics.strip() # ← corpo das métricas
-    }
+    return JSONResponse(content={
+        "status": "success" if success_count > 0 else "error",
+        "sources_count": success_count if success_count > 0 else 1,  # 👈 count mínimo 1
+        "total_targets": len(urls),
+        "metrics": combined_metrics.strip()
+    })
+
+@app.get("/")
+def get_all_metrics():
+    return get_metric_response(METRIC_URLS)
 
 @app.get("/inovacao")
-def get_metrics():
-    try:
-        url = METRIC_URLS[0]
-        r = requests.get(url, timeout=5)
-        r.raise_for_status()
-        return Response(content=r.text, media_type="text/plain")
-    except Exception as e:
-        return Response(content=f"Erro ao buscar métricas: {e}", status_code=500)
-
+def get_inovacao_metrics():
+    return get_metric_response([METRIC_URLS[0]])
 
 @app.get("/lugarhv2")
-def get_metrics():
-    try:
-        url = METRIC_URLS[1]
-        r = requests.get(url, timeout=5)
-        r.raise_for_status()
-        return Response(content=r.text, media_type="text/plain")
-    except Exception as e:
-        return Response(content=f"Erro ao buscar métricas: {e}", status_code=500)
+def get_lugarhv2_metrics():
+    return get_metric_response([METRIC_URLS[1]])
+
+@app.get("/redbrasil")
+def get_lugarhv2_metrics():
+    return get_metric_response([METRIC_URLS[2]])
+
+@app.get("/mailsender")
+def get_lugarhv2_metrics():
+    return get_metric_response([METRIC_URLS[3]])
