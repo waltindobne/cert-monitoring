@@ -1,38 +1,38 @@
 const API_URL = 'http://localhost:8080';
-const clusters = [
-    { name: 'Inovacao', metrics: `${API_URL}/inovacao` },
-    { name: 'LugarhV2', metrics: `${API_URL}/lugarhv2` },
-    { name: 'RedBrasil', metrics: `${API_URL}/redbrasil` },
-    { name: 'MailSender', metrics: `${API_URL}/mailsender` }
-]
-// Pega o 'value' da URL 
 const params = new URLSearchParams(window.location.search);
 const clusterName = params.get('value');
 
+
+let itemsPerPage = 10;
 let currentPage = 1;
-const itemsPerPage = 15;
 let activeFilter = 'todos';
 let filteredDomains = [];
+
+const itemsPageSelect = document.getElementById('items-page');
+const itemsFilterSelect = document.getElementById('items-filter');
 
 async function loadHeader() {
     try {
         console.log("Loading header...");
 
         const header = document.getElementById("header-placeholder");
-
         if (!header) {
             console.error("Header placeholder not found");
             return;
         }
 
-        const response = await fetch('/components/header.html');
+        const [htmlResponse, clustersResponse] = await Promise.all([
+            fetch('/components/header.html'),
+            fetch(`${API_URL}`)
+        ]);
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!htmlResponse.ok) throw new Error(`Header error: ${htmlResponse.status}`);
+        if (!clustersResponse.ok) throw new Error(`Clusters error: ${clustersResponse.status}`);
 
-        const data = await response.text();
-        header.innerHTML = data;
+        const htmlContent = await htmlResponse.text();
+        const clustersData = await clustersResponse.json();
+
+        header.innerHTML = htmlContent;
 
         const nav = document.querySelector('header nav');
         let html = `
@@ -42,9 +42,11 @@ async function loadHeader() {
             </a>
         `;
 
-        clusters.forEach(item => {
+        clustersData.details.forEach(item => {
             html += `
-            <a href="/cluster.html?value=${item.name.toLowerCase()}" data-page="${item.name.toLowerCase()}" class="${clusterName == item.name.toLowerCase() ? "active" : ""}">
+            <a href="/cluster.html?value=${item.name.toLowerCase()}" 
+               data-page="${item.name.toLowerCase()}" 
+               class="${clusterName == item.name.toLowerCase() ? "active" : ""}">
                 <i class="devicon-kubernetes-plain"></i>
                 <p>${item.name}</p>
             </a>
@@ -59,30 +61,19 @@ async function loadHeader() {
     }
 }
 
-function timeNow(seconds) {
-    if (seconds === 0) {
-        return { years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0, expired: false };
-    }
+function remainingText(expirationTs) {
+    const now = Math.floor(Date.now() / 1000);
+    const diff = expirationTs - now;
+    const expired = diff <= 0;
 
-    const expired = seconds < 0;
-    seconds = Math.abs(seconds); // trabalhar sempre com valor positivo
+    const totalDays = Math.floor(Math.abs(diff) / 86400);
+    const totalHours = Math.floor((Math.abs(diff) % 86400) / 3600);
 
-    const years = Math.floor(seconds / (365 * 24 * 60 * 60));
-    seconds %= (365 * 24 * 60 * 60);
+    const text = expired
+        ? `Expirado há ${totalDays}d`
+        : `em ${totalDays}d ${totalHours}h`;
 
-    const months = Math.floor(seconds / (30 * 24 * 60 * 60));
-    seconds %= (30 * 24 * 60 * 60);
-
-    const days = Math.floor(seconds / (24 * 60 * 60));
-    seconds %= (24 * 60 * 60);
-
-    const hours = Math.floor(seconds / (60 * 60));
-    seconds %= (60 * 60);
-
-    const minutes = Math.floor(seconds / 60);
-    seconds = Math.floor(seconds % 60);
-
-    return { years, months, days, hours, minutes, seconds, expired };
+    return { expired, text };
 }
 
 function formatExpirationTimestamp(timestampInSeconds) {
@@ -93,39 +84,26 @@ function formatExpirationTimestamp(timestampInSeconds) {
     return `${day}/${month}/${year}`;
 }
 
-
 async function getCertExporter() {
     try {
         const url = clusterName ? `${API_URL}/${clusterName}` : API_URL;
-        const all = [], valid = [], expired = [], expiringSoon = [];
 
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
+        const result = await response.json();
         const now = Math.floor(Date.now() / 1000);
         const ONE_MONTH_IN_SECONDS = 30 * 24 * 60 * 60;
 
-        const result = await response.json();
-        const lines = result.metrics.split('\n');
-        lines.forEach(line => {
-            const nameMatch = line.match(/,name="([^"]+)"/);
-            if (!nameMatch) return;
+        const all = result.certificates;
+        const valid = [];
+        const expired = [];
+        const expiringSoon = [];
 
-            let name = nameMatch[1];
-            if (name.endsWith('-secret')) {
-                name = name.slice(0, -7);
-            }
-
-            const expirationMatch = line.match(/ ([0-9.e+-]+)$/);
-            const expiration = expirationMatch ? parseFloat(expirationMatch[1]) : 0;
-            if (!expiration) return;
-
-            const cert = { name, expiration };
-
-            all.push(cert);
-
+        all.forEach(cert => {
+            const expiration = cert.expiration;
             if (expiration <= now) {
                 expired.push(cert);
             } else if (expiration - now <= ONE_MONTH_IN_SECONDS) {
@@ -136,7 +114,7 @@ async function getCertExporter() {
             }
         });
 
-        console.log(`✅ Sucesso ao puxar as métricas`);
+        console.log(`✅ Métricas recebidas`);
         console.log(`Total: ${all.length} | Válidos: ${valid.length} | Expirados: ${expired.length} | Expirando em 30 dias: ${expiringSoon.length}`);
 
         return {
@@ -145,7 +123,8 @@ async function getCertExporter() {
             expired,
             expiringSoon,
             all,
-            sources_count: result.sources_count
+            sources_count: result.details.length,
+            details: result.details
         };
 
     } catch (error) {
@@ -164,77 +143,54 @@ async function getCertExporter() {
 function updateCounters(data) {
     const totalCerts = document.querySelectorAll('#certs');
     if (totalCerts.length >= 2) {
-        totalCerts[0].textContent = data.valid.length; // Certificados válidos 
-        totalCerts[1].textContent = data.expired.length; // Certificados expirados
+        totalCerts[0].textContent = data.valid.length;
+        totalCerts[1].textContent = data.expired.length;
     }
 
     const alerts = document.querySelector('#alerts');
     if (alerts) {
-        alerts.textContent = data.expiringSoon.length; // Certificados expirando em 30 dias
+        alerts.textContent = data.expiringSoon.length;
     }
 
     const clusters = document.querySelector('#clusters');
     if (clusters) {
-        clusters.textContent = data.sources_count; // Clusters (você pode ajustar essa lógica)
+        clusters.textContent = data.sources_count;
     }
 }
 
 async function innerCertificate(data) {
-    let rows = document.querySelector('.rows');
+    const rows = document.querySelector('.rows');
     if (!rows) return;
 
-    rows.classList.remove('disabled');
     rows.innerHTML = '';
 
-    if (!data) return; 
-
-    filteredDomains = filteredDomains.length ? filteredDomains : data.all;
-
     if (!filteredDomains.length) {
-        rows.innerHTML = `
-            <i class="bi bi-box-seam"></i>
-            <p>Nenhum certificado encontrado.</p>
-        `;
         rows.classList.add('disabled');
-        updatePaginationUI();
+        rows.innerHTML = `<i class="bi bi-box-seam"></i><p>Nenhum certificado encontrado.</p>`;
         return;
     }
 
+    rows.classList.remove('disabled');
+
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentDomains = filteredDomains.slice(startIndex, endIndex);
+    const currentDomains = filteredDomains.slice(startIndex, startIndex + itemsPerPage);
 
     currentDomains.forEach(domain => {
-        const div = document.createElement('div');
-     const now = Math.floor(Date.now() / 1000);
-        const secondsRemaining = domain.expiration - now;
-        const timeToExpire = timeNow(secondsRemaining);
-
-        // Formatar data de expiração
+        const { expired, text } = remainingText(domain.expiration);
         const expirationDate = formatExpirationTimestamp(domain.expiration);
 
-        let expirationText = expirationDate;
-        if (timeToExpire.expired) {
-            expirationText += ` (Expirado há ${timeToExpire.days}d ${timeToExpire.hours}h ${timeToExpire.minutes}min)`;
-        } else {
-            expirationText += ` (em ${timeToExpire.days}d ${timeToExpire.hours}h ${timeToExpire.minutes}min)`;
-        }
-
-        // Definir status
-        const statusClass = timeToExpire.expired ? 'expired' : '';
-        const statusText = timeToExpire.expired ? 'Expirado' : 'Ativo';
-
-        div.innerHTML = `
-            <div class="domain-card ${statusClass}">
-                <p>${domain.name}</p>
-                <span>${expirationText}</span>
-                <span class="status">${statusText}</span>
-            </div>
-        `;
-
-        rows.appendChild(div);
+        rows.innerHTML += `
+        <div class="domain-card ${expired ? 'expired' : ''}">
+            <p>${domain.name}</p>
+            <span>${expirationDate} (${text})</span>
+            <span class="status">${expired ? 'Expirado' : 'Ativo'}</span>
+            <button onclick='showDetails(${JSON.stringify(domain)})'>
+            <i class="bi bi-eye-fill"></i>
+            </button>
+        </div>`;
     });
 }
+
 
 function applyFilter(filter, data) {
     activeFilter = filter;
@@ -262,7 +218,6 @@ function applyFilter(filter, data) {
 function filterDomains(searchTerm, data) {
     let baseList;
 
-    // Usa o filtro ativo para decidir qual lista usar
     switch (activeFilter) {
         case 'ativos':
             baseList = data.valid;
@@ -277,7 +232,6 @@ function filterDomains(searchTerm, data) {
             baseList = data.all;
     }
 
-    // Aplica a busca sobre a lista filtrada
     if (searchTerm === '') {
         filteredDomains = baseList;
     } else {
@@ -295,9 +249,7 @@ function setupPagination(data) {
     const prev = document.querySelector('.paginate button:first-child');
     const next = document.querySelector('.paginate button:last-child');
     const searchInput = document.querySelector('.search input');
-    const filterButtons = document.querySelectorAll('.search nav button');
 
-    // Navegação
     prev.addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;
@@ -305,6 +257,7 @@ function setupPagination(data) {
             updatePagination(data);
         }
     });
+
     next.addEventListener('click', () => {
         const totalPages = Math.ceil(filteredDomains.length / itemsPerPage);
         if (currentPage < totalPages) {
@@ -319,14 +272,28 @@ function setupPagination(data) {
         updatePagination(data);
     });
 
-    filterButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            applyFilter(btn.textContent.toLowerCase(), data);
+    if (itemsPageSelect) {
+        itemsPageSelect.addEventListener('change', (e) => {
+            itemsPerPage = parseInt(e.target.value);
+            currentPage = 1;
+            innerCertificate(data);
+            updatePagination(data);
         });
-    });
+    }
+
+    if (itemsFilterSelect) {
+        itemsFilterSelect.addEventListener('change', (e) => {
+            const selected = e.target.value.toLowerCase();
+            applyFilter(selected, data);
+
+            const searchTerm = searchInput.value.toLowerCase();
+            if (searchTerm) {
+                filterDomains(searchTerm, data);
+            }
+        });
+    }
 }
+
 
 function updatePagination(data) {
     const totalPages = Math.ceil(filteredDomains.length / itemsPerPage);
@@ -339,7 +306,7 @@ function updatePagination(data) {
         paginateContainer.style.display = 'none';
         return;
     } else {
-        paginateContainer.style.display = 'flex'; // ou 'block', dependendo do seu layout
+        paginateContainer.style.display = 'flex';
     }
 
     ul.innerHTML = '';
@@ -347,10 +314,8 @@ function updatePagination(data) {
     prev.disabled = currentPage === 1;
     next.disabled = currentPage === totalPages || totalPages === 0;
 
-    // Nenhuma página
     if (totalPages <= 1) return;
 
-    // Helper pra criar botões numerados
     const addPage = page => {
         const li = document.createElement('li');
         li.textContent = page;
@@ -363,7 +328,6 @@ function updatePagination(data) {
         ul.appendChild(li);
     };
 
-    // Sempre mostra primeira e última
     addPage(1);
     if (currentPage > 3) ul.appendChild(Object.assign(document.createElement('li'), { textContent: '...' }));
 
@@ -375,6 +339,43 @@ function updatePagination(data) {
     if (totalPages > 1) addPage(totalPages);
 }
 
+function showDetails(cert) {
+    const modal = document.getElementById('cert-modal');
+
+    document.getElementById('modal-name').textContent = cert.name || '-';
+    document.getElementById('modal-secret').textContent = cert.secret || '-';
+    document.getElementById('modal-namespace').textContent = cert.namespace || '-';
+    document.getElementById('modal-issuer').textContent = cert.issuer || '-';
+    document.getElementById('modal-issuer-kind').textContent = cert.issuer_kind || '-';
+    document.getElementById('modal-issuer-group').textContent = cert.issuer_group || '-';
+    document.getElementById('modal-expiration').textContent =
+        formatExpirationTimestamp(cert.expiration) || '-';
+    document.getElementById('modal-renewal').textContent =
+        cert.renewal ? formatExpirationTimestamp(cert.renewal) : '-';
+    document.getElementById('modal-status').textContent = cert.status || '-';
+
+    modal.style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('cert-modal').style.display = 'none';
+}
+
+document.querySelector('.close-btn').addEventListener('click', closeModal);
+
+window.addEventListener('click', (event) => {
+    const modal = document.getElementById('cert-modal');
+    if (event.target === modal) {
+        closeModal();
+    }
+});
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', main);
+} else {
+    main();
+}
+
 async function main() {
     console.log("Global JS loaded");
     const result = await getCertExporter();
@@ -383,12 +384,5 @@ async function main() {
     await innerCertificate(result);
     await setupPagination(result);
     await updatePagination(result);
-    console.log(result);
     await loadHeader();
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', main);
-} else {
-    main();
 }

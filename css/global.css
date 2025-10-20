@@ -2,9 +2,11 @@
     padding: 0;
     margin: 0;
 }
+
 html {
     scroll-behavior: smooth;
 }
+
 :root {
     --background: #0f111a;
     --foreground: #1a1c26;
@@ -18,36 +20,28 @@ html {
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  transition: .2s;
+    width: 8px;
+    height: 8px;
+    transition: .2s;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1e1e2e;
-  border-radius: 10px;
+    background: #1e1e2e;
+    border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #444;
-  border-radius: 10px;
-  border: 2px solid #1e1e2e;
+    background-color: #444;
+    border-radius: 10px;
+    border: 2px solid #1e1e2e;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--primary);
+    background-color: var(--primary);
 }
 
 ::-webkit-scrollbar-thumb:active {
-  background-color: var(--primary); 
-}
-
-
-body {    
-    width: auto;
-    background-color: var(--background);
-    color: var(--text-primary);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--primary);
 }
 
 .active {
@@ -57,6 +51,321 @@ body {
 }
 
 .expired {
+    padding-right: 10px;
+    border-radius: 10px;
     background: red !important;
-    color: var(--background) !important;
+    color: white !important;
+}
+
+body {
+    width: auto;
+    height: 100vh;
+    padding: 10px;
+    background-color: var(--background);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-primary);
+    box-sizing: border-box;
+    display: flex;
+}
+
+/* Estilização do header ------------------------------------------------------------------- */
+header {
+    width: 250px;
+    height: calc(100vh - 20px);
+    padding: 30px 20px 20px 20px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    background-color: var(--foreground);
+    border: 1px solid var(--secondary);
+
+    color: var(--header-text);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    gap: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header .logo {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+header .logo i {
+    color: var(--primary);
+    font-size: 30px;
+}
+
+header nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    gap: 5px;
+}
+
+header nav a {
+    width: auto;
+    padding: 10px 20px;
+    background: var(--background);
+    border: none;
+    outline: 1px solid var(--primary);
+    border-radius: 5px;
+    color: var(--primary);
+    font-size: 16px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 5px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+header nav a:hover {
+    background: var(--primary);
+    color: var(--background);
+}
+
+/* Estilização do main ---------------------------------------------------------------------- */
+main {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    overflow: auto;
+}
+
+/* Estilização do .resume ------------------------------------------------------------------- */
+main .resume {
+    width: 100%;
+    padding: 20px 40px;
+    box-sizing: border-box;
+    background-color: var(--third);
+    border: 1px solid var(--primary);
+    border-radius: 10px;
+    color: var(--primary);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Estilização do .list-cert --------------------------------------------------------------- */
+main .list-cert .search {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+main .list-cert .search input {
+    width: 300px;
+    padding: 10px;
+    background: var(--foreground);
+    border-radius: 8px;
+    border: 1px solid var(--secondary);
+    outline: none;
+    color: var(--text-primary);
+    font-size: 16px;
+}
+
+main .list-cert .search nav select {
+    width: 120px;
+    padding: 10px 10px;
+    background: var(--foreground);
+    color: var(--primary);
+    border-radius: 10px;
+    border: 1px solid var(--secondary);
+    outline: none;
+}
+
+main .list-cert .search nav select:hover {
+    cursor: pointer;
+}
+
+main .list-cert .table {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    background-color: var(--foreground);
+    border-radius: 10px;
+    border: 1px solid var(--secondary);
+    color: var(--text-primary);
+}
+
+main .list-cert .table .header,
+main .list-cert table .rows {
+    width: 100%;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+main .list-cert .table .rows {
+    padding: 15px 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+main .list-cert .table .rows:last-child {
+    border-bottom: 1px solid var(--secondary);
+}
+
+main .list-cert .table .header {
+    border-bottom: 1px solid var(--secondary);
+}
+
+main .list-cert .table .disabled {
+    padding: 30px;
+    color: var(--text-third);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+main .list-cert .table .disabled i {
+    font-size: 40px;
+}
+
+main .list-cert .table .rows .domain-card {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+main .list-cert .table .rows .domain-card p {
+    width: 50%;
+    padding: 3px 10px;
+    background: var(--background);
+    border-radius: 8px;
+    color: var(--text-primary);
+    overflow: hidden;
+}
+
+main .list-cert .table .rows .domain-card button {
+    background: none;
+    padding: 0px 10px;
+    border-radius: 10px;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    transition: .2s;
+}
+
+main .list-cert .table .rows .domain-card button:hover {
+    background: var(--primary);
+    color: var(--background);
+}
+
+/* Estilização do .paginate ----------------------------------------------------------- */
+main .paginate {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+main .paginate button {
+    padding: 10px 20px;
+    background-color: var(--foreground);
+    border: none;
+    outline: 1px solid var(--secondary);
+    border-radius: 8px;
+    font-size: 16px;
+    color: var(--primary);
+    cursor: pointer;
+    transition: .2s;
+}
+
+main .paginate button:hover {
+    background-color: var(--primary);
+    color: var(--background);
+}
+
+main .paginate ul {
+    display: flex;
+    gap: 5px;
+}
+
+main .paginate ul li {
+    padding: 8.5px 20px;
+    background: var(--foreground);
+    border-radius: 8px;
+
+    color: var(--text-secondary);
+    list-style: none;
+
+    outline: 1px solid var(--secondary);
+
+    cursor: pointer;
+    transition: .2s;
+}
+
+main .paginate ul li:hover {
+    background: var(--primary);
+    color: var(--background);
+}
+
+/* Estilização do modal detalhes -------------------------------------------------------------- */
+
+main .list-cert .modal {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+main .list-cert .modal-content {
+    width: 400px;
+    max-width: 90%;
+    padding: 20px;
+    margin: 10% auto;
+    background-color: var(--foreground);
+    border-radius: 8px;
+    border: 1px solid var(--secondary);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+    cursor: auto;
+}
+
+main .list-cert .modal-content h2 {
+    margin-bottom: 15px;
+    color: var(--primary);
+}
+
+main .list-cert .modal-content p {
+    padding: 3px 10px;
+    margin: 3px 0px;
+    background-color: var(--background);
+    border-radius: 5px;
+    color: var(--text-primary);
+}
+
+main .list-cert .close-btn {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+main .list-cert .close-btn:hover {
+    color: red;
 }
