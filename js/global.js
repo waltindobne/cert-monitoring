@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080';
+const API_URL = 'http://localhost:8000';
 const params = new URLSearchParams(window.location.search);
 const clusterName = params.get('value');
 

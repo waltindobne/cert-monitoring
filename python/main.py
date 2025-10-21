@@ -11,17 +11,20 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5500"],
+    allow_origins=["http://127.0.0.1:5500", "https://localhost:8080", "http://localhost:8080"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 METRIC_URLS = [
-    {"name": "Inovacao", "url": "http://10.5.2.9:9402/metrics"},
+    {"name": "BNEV2", "url": "http://10.5.2.7:9402/metrics"},
     {"name": "LugarhV2", "url": "http://10.5.2.13:9402/metrics"},
+    {"name": "LugarhATS", "url": "http://10.5.2.15:9402/metrics"},
+    {"name": "Inovacao", "url": "http://10.5.2.9:9402/metrics"},
     {"name": "RedBrasil", "url": "http://10.5.2.14:9402/metrics"},
     {"name": "MailSender", "url": "http://10.5.2.16:9402/metrics"},
+    {"name": "AKS-PRD", "url": "http://4.153.117.246:9402/metrics"},
 ]
 
 def parse_cert_metrics(metrics_text):
@@ -115,7 +118,7 @@ def get_metric_response(sources):
 def get_all_metrics():
     return get_metric_response(METRIC_URLS)
 
-@app.get("/inovacao")
+@app.get("/bnev2")
 def get_inovacao_metrics():
     return get_metric_response([METRIC_URLS[0]])
 
@@ -123,10 +126,22 @@ def get_inovacao_metrics():
 def get_lugarhv2_metrics():
     return get_metric_response([METRIC_URLS[1]])
 
+@app.get("/lugarhats")
+def get_inovacao_metrics():
+    return get_metric_response([METRIC_URLS[2]])
+
+@app.get("/inovacao")
+def get_inovacao_metrics():
+    return get_metric_response([METRIC_URLS[3]])
+
 @app.get("/redbrasil")
 def get_redbrasil_metrics():
-    return get_metric_response([METRIC_URLS[2]])
+    return get_metric_response([METRIC_URLS[4]])
 
 @app.get("/mailsender")
 def get_mailsender_metrics():
-    return get_metric_response([METRIC_URLS[3]])
+    return get_metric_response([METRIC_URLS[5]])
+
+@app.get("/aks-prd")
+def get_inovacao_metrics():
+    return get_metric_response([METRIC_URLS[6]])
