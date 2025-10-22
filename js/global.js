@@ -42,15 +42,30 @@ async function loadHeader() {
             </a>
         `;
 
-        clustersData.details.forEach(item => {
-            html += `
-            <a href="/cluster.html?value=${item.name.toLowerCase()}" 
-               data-page="${item.name.toLowerCase()}" 
-               class="${clusterName == item.name.toLowerCase() ? "active" : ""}">
-                <i class="devicon-kubernetes-plain"></i>
-                <p>${item.name}</p>
-            </a>
-            `;
+        clustersData.details.forEach(item=> {
+            if (item.status == 'success') {
+                html += `
+                    <a href="/cluster.html?value=${item.name.toLowerCase()}" 
+                        data-page="${item.name.toLowerCase()}" 
+                        class="${clusterName == item.name.toLowerCase() ? "active" : ""}">
+                        <i class="devicon-kubernetes-plain"></i>
+                        <p>${item.name}</p>
+                    </a>
+                `;
+            }
+        });
+
+        clustersData.details.forEach(item=> {
+            if (item.status == 'error') {
+                html += `
+                    <a href="/cluster.html?value=${item.name.toLowerCase()}" 
+                        data-page="${item.name.toLowerCase()}" 
+                        class="notActive">
+                        <i class="devicon-kubernetes-plain"></i>
+                        <p>${item.name}</p>
+                    </a>
+                `;
+            }
         });
 
         nav.innerHTML = html;
@@ -101,6 +116,7 @@ async function getCertExporter() {
         const valid = [];
         const expired = [];
         const expiringSoon = [];
+        let counts = 0;
 
         all.forEach(cert => {
             const expiration = cert.expiration;
@@ -114,6 +130,14 @@ async function getCertExporter() {
             }
         });
 
+        result.details.forEach(item => {
+            if (item.status == 'success') {
+                counts++;
+            }
+        })
+
+        console.log(counts);
+
         console.log(`✅ Métricas recebidas`);
         console.log(`Total: ${all.length} | Válidos: ${valid.length} | Expirados: ${expired.length} | Expirando em 30 dias: ${expiringSoon.length}`);
 
@@ -123,7 +147,7 @@ async function getCertExporter() {
             expired,
             expiringSoon,
             all,
-            sources_count: result.details.length,
+            sources_count: counts,
             details: result.details
         };
 
@@ -180,12 +204,14 @@ async function innerCertificate(data) {
         const expirationDate = formatExpirationTimestamp(domain.expiration);
 
         rows.innerHTML += `
-        <div class="domain-card ${expired ? 'expired' : ''}">
+        <div class="domain-card">
             <p>${domain.name}</p>
-            <span>${expirationDate} (${text})</span>
-            <span class="status">${expired ? 'Expirado' : 'Ativo'}</span>
+            <div class="data-expired ${expired ? 'expired' : ''}">
+                <span style="width: 80%;">${expirationDate} (${text})</span>
+                <span style="width: 20%; text-align: center;" class="status">${expired ? 'Expirado' : 'Ativo'}</span>
+            </div>
             <button onclick='showDetails(${JSON.stringify(domain)})'>
-            <i class="bi bi-eye-fill"></i>
+                <i class="bi bi-eye-fill"></i>
             </button>
         </div>`;
     });

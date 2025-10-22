@@ -10,13 +10,14 @@ html {
 :root {
     --background: #0f111a;
     --foreground: #1a1c26;
-    --primary: #ffdf20;
+    --primary: #5b86ff;
     --secondary: #3a3f58;
     --third: #ffdf2010;
     --text-primary: #ffffff;
     --text-secondary: #aaaaaa;
     --text-third: #777777;
     --text-quart: #49f9ff;
+    --danger: rgb(255, 52, 52);
 }
 
 ::-webkit-scrollbar {
@@ -50,11 +51,17 @@ html {
     outline: none !important;
 }
 
+.notActive {
+    color: var(--text-third) !important;
+    outline: 1px solid var(--text-third) !important;
+}
+.notActive:hover {
+    color: var(--background) !important;
+    background-color: var(--text-third) !important;
+}
+
 .expired {
-    padding-right: 10px;
-    border-radius: 10px;
-    background: red !important;
-    color: white !important;
+    color: var(--danger) !important;
 }
 
 body {
@@ -145,7 +152,7 @@ main .resume {
     width: 100%;
     padding: 20px 40px;
     box-sizing: border-box;
-    background-color: var(--third);
+    background-color: var(--foreground);
     border: 1px solid var(--primary);
     border-radius: 10px;
     color: var(--primary);
@@ -242,6 +249,7 @@ main .list-cert .table .rows .domain-card {
     width: 100%;
     display: flex;
     justify-content: space-between;
+    gap: 10px;
 }
 
 main .list-cert .table .rows .domain-card p {
@@ -253,10 +261,16 @@ main .list-cert .table .rows .domain-card p {
     overflow: hidden;
 }
 
+main .list-cert .table .rows .domain-card .data-expired {
+    width: 40%;
+    display: flex;
+    justify-content: space-between;
+}
+
 main .list-cert .table .rows .domain-card button {
     background: none;
     padding: 0px 10px;
-    border-radius: 10px;
+    border-radius: 8px;
     border: none;
     color: var(--primary);
     cursor: pointer;

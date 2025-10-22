@@ -108,7 +108,6 @@ def get_metric_response(sources):
     consolidated = parse_cert_metrics(metrics_aggregated)
 
     return JSONResponse(content={
-        "status": "success",
         "details": details,
         "certificates": consolidated
     })
