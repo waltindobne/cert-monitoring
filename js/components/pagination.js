@@ -1,3 +1,6 @@
+import { domCache, state } from "../config.js";
+import { innerCertificate } from "./certificates.js";
+import { applyFilter, filterDomains } from "./filters.js";
 export function setupPagination(data) {
     if (!domCache.prevButton || !domCache.nextButton || !domCache.searchInput) {
         console.warn('Elementos de paginação não encontrados');

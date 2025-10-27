@@ -1,5 +1,7 @@
+import { DEBOUNCE_DELAY, state } from '../config.js';
 import { debounce } from '../utils/cache.js';
-import { DEBOUNCE_DELAY } from '../config.js';
+import { innerCertificate } from './certificates.js';
+import { updatePagination } from './pagination.js';
 
 export function applyFilter(filter, data) {
     state.activeFilter = filter;

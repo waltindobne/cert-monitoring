@@ -1,3 +1,6 @@
+import { API_URL, clusterName } from "../config.js";
+import { fetchWithCache } from "../utils/cache.js";
+
 export async function loadHeader() {
     try {
         console.log("Loading header...");

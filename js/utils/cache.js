@@ -1,3 +1,5 @@
+import { state, CACHE_DURATION } from "../config.js";
+
 export function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {

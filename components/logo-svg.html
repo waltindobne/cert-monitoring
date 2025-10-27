@@ -1,0 +1,36 @@
+<svg viewBox="0 0 140 120" width="280" height="240" xmlns="http://www.w3.org/2000/svg">
+  <!-- Configurações -->
+  <style>
+    :root { --wave-color:#5b86ff; --dur:2.2s; --stroke:6; }
+    .ring{
+      fill:none; stroke:var(--wave-color); stroke-width:var(--stroke);
+      opacity:.9; filter: drop-shadow(0 0 4px rgba(91,134,255,.55));
+    }
+  </style>
+
+  <!-- Máscara para mostrar só a "meia-lua" à direita (ondas de sinal) -->
+  <mask id="rightHalf">
+    <rect x="0" y="0" width="140" height="120" fill="black"/>
+    <!-- mostra só a metade direita a partir do centro das ondas (x >= 20) -->
+    <rect x="20" y="0" width="120" height="120" fill="white"/>
+  </mask>
+
+  <!-- Centro das ondas (imagine a antena à esquerda do ponto 20,60) -->
+  <g mask="url(#rightHalf)">
+    <!-- 3 anéis que expandem e somem em loop -->
+    <circle class="ring" cx="20" cy="60" r="8">
+      <animate attributeName="r" values="8; 60" dur="var(--dur)" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values=".9; .0" dur="var(--dur)" repeatCount="indefinite"/>
+    </circle>
+
+    <circle class="ring" cx="20" cy="60" r="8">
+      <animate attributeName="r" values="8; 60" dur="var(--dur)" begin="calc(var(--dur)/3)" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values=".9; .0" dur="var(--dur)" begin="calc(var(--dur)/3)" repeatCount="indefinite"/>
+    </circle>
+
+    <circle class="ring" cx="20" cy="60" r="8">
+      <animate attributeName="r" values="8; 60" dur="var(--dur)" begin="calc(2*var(--dur)/3)" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values=".9; .0" dur="var(--dur)" begin="calc(2*var(--dur)/3)" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

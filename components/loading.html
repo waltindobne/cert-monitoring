@@ -1,7 +1,37 @@
-<head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-</head>
-<div>
-    <i class="bi bi-bookmark-fill"></i>
-    <i class="fa-solid fa-certificate"></i>
+<div style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center;">
+    <img src="../img/logo-primary.png" alt="" style="width: 120px;">
+    <div style="position: relative;">
+        <svg style="position: absolute; top: -153; left: -110; transform: rotate(45deg);" viewBox="0 0 120 120" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                :root {
+                    --wave-color: #5b86ff;
+                }
+
+                .wave {
+                    fill: none;
+                    stroke: var(--wave-color);
+                    stroke-width: 6;
+                    stroke-linecap: round;
+                    opacity: 0;
+                    filter: drop-shadow(0 0 4px rgba(91, 134, 255, 0.6));
+                }
+
+                .dot {
+                    fill: var(--wave-color);
+                    filter: drop-shadow(0 0 4px rgba(91, 134, 255, 0.6));
+                }
+            </style>
+
+            <!-- ondas -->
+            <path class="wave" d="M48 75 A18 30 0 0 1 73 75">
+                <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" begin="0s" />
+            </path>
+            <path class="wave" d="M35 70 A33 45 0 0 1 85 67">
+                <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" begin="0.2s" />
+            </path>
+            <path class="wave" d="M21 62 A48 60 0 0 1 100 62">
+                <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" begin="0.4s" />
+            </path>
+        </svg>
+    </div>
 </div>

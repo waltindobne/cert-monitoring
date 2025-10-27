@@ -1,3 +1,6 @@
+import { domCache, state } from "../config.js";
+import { remainingText, formatExpirationTimestamp, escapeHtml } from '../utils/dom.js';
+
 export function updateCounters(data) {
     requestAnimationFrame(() => {
         const totalCerts = document.querySelectorAll('#certs');
@@ -48,7 +51,7 @@ export function innerCertificate(data) {
         <div class="domain-card">
             <p>${safeName}</p>
             <div class="data-expired ${statusClass}">
-                <span style="width: 80%;">${safeExpirationDate} (${safeText})</span>
+                <span style="width: 80%;">${safeExpirationDate} ${safeText}</span>
                 <span style="width: 20%; text-align: center;" class="status">${statusText}</span>
             </div>
             <button onclick='showDetails(${JSON.stringify(domain).replace(/"/g, '&quot;')})'>

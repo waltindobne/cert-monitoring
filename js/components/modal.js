@@ -1,3 +1,5 @@
+import { formatExpirationTimestamp } from "../utils/dom.js";
+
 export function showDetails(cert) {
     const modal = document.getElementById('cert-modal');
 

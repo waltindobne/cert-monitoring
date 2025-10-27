@@ -95,15 +95,14 @@ header {
 }
 
 header .logo {
-    text-align: center;
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 10px;
 }
 
-header .logo i {
-    color: var(--primary);
-    font-size: 30px;
+header .logo img {
+    width: 40px;
 }
 
 header nav {

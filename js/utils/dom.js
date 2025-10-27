@@ -1,3 +1,5 @@
+import { domCache } from '../config.js';
+
 export function initDOMCache() {
     domCache.itemsPageSelect = document.getElementById('items-page');
     domCache.itemsFilterSelect = document.getElementById('items-filter');
@@ -24,32 +26,47 @@ export function showErrorMessage(message) {
     `;
     errorDiv.textContent = message;
     document.body.appendChild(errorDiv);
-    
+
     setTimeout(() => {
         errorDiv.remove();
     }, 5000);
 }
 
 export function remainingText(expirationTs) {
-    const now = Math.floor(Date.now() / 1000);
-    const diff = expirationTs - now;
-    const expired = diff <= 0;
+  const ts = Number(expirationTs);
 
-    const totalDays = Math.floor(Math.abs(diff) / 86400);
-    const totalHours = Math.floor((Math.abs(diff) % 86400) / 3600);
+  if (!ts || ts <= 0 || Number.isNaN(ts)) {
+    return {
+      expired: true,
+      text: 'Secret removido / sem data'
+    };
+  }
 
-    const text = expired
-        ? `Expirado há ${totalDays}d`
-        : `em ${totalDays}d ${totalHours}h`;
+  const now = Math.floor(Date.now() / 1000);
+  const diff = ts - now;
+  const expired = diff <= 0;
 
-    return { expired, text };
+  const absDiff = Math.abs(diff);
+  const totalDays = Math.floor(absDiff / 86400);
+  const totalHours = Math.floor((absDiff % 86400) / 3600);
+
+  const text = expired
+    ? `Expirado há ${totalDays}d`
+    : `Expira em ${totalDays}d ${totalHours}h`;
+
+  return { expired, text };
 }
 
 export function formatExpirationTimestamp(timestampInSeconds) {
+    if (!timestampInSeconds || timestampInSeconds <= 0) {
+        return "";
+    }
+
     const expirationDate = new Date(timestampInSeconds * 1000);
     const day = String(expirationDate.getDate()).padStart(2, '0');
     const month = String(expirationDate.getMonth() + 1).padStart(2, '0');
     const year = expirationDate.getFullYear();
+
     return `${day}/${month}/${year}`;
 }
 

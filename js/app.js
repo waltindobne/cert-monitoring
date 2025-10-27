@@ -1,65 +1,14 @@
-// ================================
-// IMPORTS
-// ================================
-import { 
-    API_URL, 
-    CACHE_DURATION, 
-    ONE_MONTH_IN_SECONDS, 
-    DEBOUNCE_DELAY,
-    state,
-    domCache,
-    clusterName 
-} from './config.js';
+import { initDOMCache, showErrorMessage } from './utils/dom.js';
+import { getCertExporter } from './services/api.js';
+import { loadHeader } from './components/header.js';
+import { updateCounters, innerCertificate } from './components/certificates.js';
+import { filterDomains } from './components/filters.js';
+import { setupPagination, updatePagination } from './components/pagination.js';
+import { showDetails, closeModal } from './components/modal.js';
 
-import { 
-    debounce,
-    isCacheValid,
-    fetchWithCache 
-} from './utils/cache.js';
+window.showDetails = showDetails;
+window.closeModal = closeModal;
 
-import { 
-    initDOMCache,
-    showErrorMessage,
-    remainingText,
-    formatExpirationTimestamp,
-    escapeHtml 
-} from './utils/dom.js';
-
-import { 
-    getCertExporter,
-    processCertificatesData,
-    getEmptyDataStructure 
-} from './services/api.js';
-
-import { 
-    loadHeader,
-    generateNavigationHTML 
-} from './components/header.js';
-
-import { 
-    updateCounters,
-    innerCertificate 
-} from './components/certificates.js';
-
-import { 
-    applyFilter,
-    filterDomains,
-    debouncedFilterDomains 
-} from './components/filters.js';
-
-import { 
-    setupPagination,
-    updatePagination 
-} from './components/pagination.js';
-
-import { 
-    showDetails,
-    closeModal 
-} from './components/modal.js';
-
-// ================================
-// FUNÇÃO PRINCIPAL
-// ================================
 async function main() {
     try {
         console.log("🚀 Inicializando aplicação...");
@@ -84,9 +33,6 @@ async function main() {
     }
 }
 
-// ================================
-// INICIALIZAÇÃO
-// ================================
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', main);
 } else {
