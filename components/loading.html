@@ -1,37 +1,99 @@
-<div style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center;">
-    <img src="../img/logo-primary.png" alt="" style="width: 120px;">
-    <div style="position: relative;">
-        <svg style="position: absolute; top: -153; left: -110; transform: rotate(45deg);" viewBox="0 0 120 120" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-            <style>
-                :root {
-                    --wave-color: #5b86ff;
-                }
+<style>
+    :root {
+        --wave-color: #5b86ff;
+        --background-overlay: #00000050;
+    }
 
-                .wave {
-                    fill: none;
-                    stroke: var(--wave-color);
-                    stroke-width: 6;
-                    stroke-linecap: round;
-                    opacity: 0;
-                    filter: drop-shadow(0 0 4px rgba(91, 134, 255, 0.6));
-                }
+    /* ==================== CONTAINER ==================== */
+    .container {
+        width: 100%;
+        height: 100vh;
+        background-color: var(--background-overlay);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.8s ease-in-out;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
 
-                .dot {
-                    fill: var(--wave-color);
-                    filter: drop-shadow(0 0 4px rgba(91, 134, 255, 0.6));
-                }
-            </style>
+    .container.hidden {
+        display: none !important;
+    }
 
-            <!-- ondas -->
-            <path class="wave" d="M48 75 A18 30 0 0 1 73 75">
-                <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" begin="0s" />
-            </path>
-            <path class="wave" d="M35 70 A33 45 0 0 1 85 67">
-                <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" begin="0.2s" />
-            </path>
-            <path class="wave" d="M21 62 A48 60 0 0 1 100 62">
-                <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" begin="0.4s" />
-            </path>
-        </svg>
+    /* ==================== LOGO ==================== */
+    .animate {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .animate img {
+        width: 120px;
+        filter: drop-shadow(0 0 8px rgba(91, 134, 255, 0.3));
+    }
+
+    /* ==================== ONDAS ==================== */
+    .signal-wifi {
+        width: 200px;
+        height: 200px;
+        position: absolute;
+        top: -98px;
+        left: 14px;
+        transform: rotate(45deg);
+    }
+
+    .wave {
+        fill: none;
+        stroke: var(--wave-color);
+        stroke-width: 6;
+        stroke-linecap: round;
+        opacity: 0;
+        filter: drop-shadow(0 0 4px rgba(91, 134, 255, 0.6));
+    }
+
+    /* ==================== TEXTO ==================== */
+    .container p {
+        color: var(--wave-color);
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        font-size: 1rem;
+        font-weight: 500;
+        letter-spacing: 2px;
+        margin-top: 1rem;
+        animation: textBlink 2s infinite;
+    }
+
+    /* ==================== ANIMAÇÕES ==================== */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes textBlink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+</style>
+
+<div id="loading-overlay" class="container">
+    <div class="animate">
+        <img src="../img/logo-primary.png" alt="Logo">
+        <div class="div-svg">
+            <svg class="signal-wifi" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                <path class="wave" d="M48 75 A18 30 0 0 1 73 75">
+                    <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" begin="0s" />
+                </path>
+                <path class="wave" d="M35 70 A33 45 0 0 1 85 67">
+                    <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" begin="0.2s" />
+                </path>
+                <path class="wave" d="M21 64 A48 60 0 0 1 97 58">
+                    <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" begin="0.4s" />
+                </path>
+            </svg>
+        </div>
     </div>
+    <p>Carregando . . .</p>
 </div>
